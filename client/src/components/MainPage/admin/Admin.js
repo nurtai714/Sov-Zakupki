@@ -20,31 +20,31 @@ import AdminProductsList from './products/AdminProductsList';
 
 const drawerWidth = 240;
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    '& .MuiDrawer-paper': {
-      position: 'relative',
-      whiteSpace: 'nowrap',
-      width: drawerWidth,
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme, open }) => ({
+  '& .MuiDrawer-paper': {
+    position: 'relative',
+    whiteSpace: 'nowrap',
+    width: drawerWidth,
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    boxSizing: 'border-box',
+    ...(!open && {
+      overflowX: 'hidden',
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
+        duration: theme.transitions.duration.leavingScreen,
       }),
-      boxSizing: 'border-box',
-      ...(!open && {
-        overflowX: 'hidden',
-        transition: theme.transitions.create('width', {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.leavingScreen,
-        }),
-        width: theme.spacing(7),
-        [theme.breakpoints.up('sm')]: {
-          width: theme.spacing(9),
-        },
-      }),
-    },
-  }),
-);
+      width: theme.spacing(7),
+      [theme.breakpoints.up('sm')]: {
+        width: theme.spacing(9),
+      },
+    }),
+  },
+}));
 
 const mdTheme = createTheme();
 
@@ -53,133 +53,140 @@ function Admin() {
   const toggleDrawer = () => {
     setOpen(!open);
   };
-  const state = useContext(GlobalState)
-  const [history] = state.userAPI.history
+  const state = useContext(GlobalState);
+  const [history] = state.userAPI.history;
 
   return (
     <div className="admin__container">
-    <ThemeProvider theme={mdTheme}>
-      <Box sx={{ display: 'flex' }}>
-        <Drawer variant="permanent" open={open} style={{zIndex: "99"}}>
-          <Toolbar
+      <ThemeProvider theme={mdTheme}>
+        <Box sx={{ display: 'flex' }}>
+          <Drawer variant="permanent" open={open} style={{ zIndex: '99' }}>
+            <Toolbar
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                px: [1],
+              }}
+            >
+              <IconButton onClick={toggleDrawer}>
+                <ChevronLeftIcon />
+              </IconButton>
+            </Toolbar>
+            <Divider />
+            <List>{mainListItems}</List>
+            <Divider />
+            <List>{secondaryListItems}</List>
+          </Drawer>
+          <Box
+            component="main"
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              px: [1],
+              backgroundColor: (theme) =>
+                theme.palette.mode === 'light'
+                  ? theme.palette.grey[100]
+                  : theme.palette.grey[900],
+              flexGrow: 1,
+              // height: '100vh',
+              // overflow: 'auto',
             }}
+            className="admin__main"
           >
-            <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </Toolbar>
-          <Divider />
-          <List>{mainListItems}</List>
-          <Divider />
-          <List>{secondaryListItems}</List>
-        </Drawer>
-        <Box
-          component="main"
-          sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
-            flexGrow: 1,
-            // height: '100vh',
-            // overflow: 'auto',
-          }}
-          className="admin__main"
-        >
-          <Container maxWidth="lg" sx={{ mt: 2, mb: 4 }}>
-              <h2 className="page__header">Overview</h2>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={7} lg={8}>
-                {/* <h2>Evarate</h2> */}
-                <Paper
-                  sx={{
-                    p: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: 150,
-                  }}
-                  // className="paper__container"
-                >
-                  <div>
-                      <h2>Total Products Sold</h2>
+            <Container maxWidth="lg" sx={{ mt: 2, mb: 4 }}>
+              <h2 className="page__header">Организатор</h2>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={7} lg={8}>
+                  {/* <h2>Evarate</h2> */}
+                  <Paper
+                    sx={{
+                      p: 2,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      height: 150,
+                    }}
+                    // className="paper__container"
+                  >
+                    <div>
+                      <h2>Всего совершенных закупок</h2>
                       <p className="overview__number">
-                        {
-                          history.reduce((prev, item) => prev + (
-                            item.cart.reduce((prevItem, product) => (
-                              prevItem + (product.sold)
-                            ), 0)
-                          ), 0)
-                        }
+                        {history.reduce(
+                          (prev, item) =>
+                            prev +
+                            item.cart.reduce(
+                              (prevItem, product) => prevItem + product.sold,
+                              0
+                            ),
+                          0
+                        )}
                       </p>
-                  </div>
-                </Paper>
+                    </div>
+                  </Paper>
+                </Grid>
+
+                {/* Recent Deposits */}
+
+                <Grid item xs={12} md={5} lg={4}>
+                  <Paper
+                    sx={{
+                      p: 2,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      height: 150,
+                    }}
+                  >
+                    <div>
+                      <h2>Общий доход</h2>
+                      <p className="overview__number">
+                        ₸{' '}
+                        {history.reduce(
+                          (prev, item) =>
+                            prev +
+                            item.cart.reduce(
+                              (prevItem, product) =>
+                                prevItem + product.quantity * product.price,
+                              0
+                            ),
+                          0
+                        )}
+                      </p>
+                    </div>
+                  </Paper>
+                </Grid>
+                <div className="space__column"></div>
+                {/*Orders */}
+
+                <Grid item xs={12}>
+                  <h2 className="page__header">История</h2>
+                  <Paper
+                    sx={{ p: 2, display: 'flex', flexDirection: 'column' }}
+                    className="paper__container"
+                  >
+                    <Orders />
+                  </Paper>
+                </Grid>
+
+                <div className="space__column"></div>
+
+                {/* category */}
+
+                <Grid item xs={12}>
+                  <h2 className="page__header">Категория</h2>
+                  <Paper
+                    sx={{ p: 2, display: 'flex', flexDirection: 'column' }}
+                    className="paper__container"
+                  >
+                    <Category />
+                  </Paper>
+                </Grid>
+
+                <div className="space__column"></div>
+
+                {/* product list */}
+                <AdminProductsList />
               </Grid>
-
-              {/* Recent Deposits */}
-
-              <Grid item xs={12} md={5} lg={4}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: 150,
-                  }}
-                >
-                  <div>
-                  <h2>Total Revenue</h2>
-                  <p className="overview__number">
-                   $ {
-                        history.reduce((prev, item) => (
-                          prev + (
-                            item.cart.reduce((prevItem, product) => (
-                              prevItem + (product.quantity * product.price)
-                            ), 0)
-                          )
-                        ), 0)
-                    }
-                  </p>
-                  </div>
-
-                </Paper>
-              </Grid>
-              <div className="space__column"></div>
-              {/*Orders */}
-
-              <Grid item xs={12}>
-                <h2 className="page__header">History</h2>
-                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column'}} className="paper__container">
-                  <Orders />
-                </Paper>
-              </Grid>
-
-              <div className="space__column"></div>
-
-                 {/* category */}
-
-              <Grid item xs={12}>
-                <h2 className="page__header">Category</h2>
-                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}  className="paper__container">
-                  <Category/>
-                </Paper>
-              </Grid>
-
-              <div className="space__column"></div>
-
-               {/* product list */}
-               <AdminProductsList/>
-              
-
-            </Grid>
-          </Container>
+            </Container>
+          </Box>
         </Box>
-      </Box>
-    </ThemeProvider>
+      </ThemeProvider>
     </div>
   );
 }

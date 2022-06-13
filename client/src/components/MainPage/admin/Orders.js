@@ -5,11 +5,11 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { GlobalState } from '../../../GlobalState';
-import {useContext} from "react"
+import { useContext } from 'react';
 
 export default function Orders() {
-  const state = useContext(GlobalState)
-  const [history] = state.userAPI.history
+  const state = useContext(GlobalState);
+  const [history] = state.userAPI.history;
 
   return (
     <React.Fragment>
@@ -17,11 +17,13 @@ export default function Orders() {
       <Table size="medium">
         <TableHead>
           <TableRow>
-            <TableCell className="order__item">Date</TableCell>
-            <TableCell className="order__item">Name</TableCell>
-            <TableCell className="order__item">PaymentID</TableCell>
-            <TableCell className="order__item">Quantity</TableCell>
-            <TableCell className="order__item" align="right">Sale Amount</TableCell>
+            <TableCell className="order__item">Дата</TableCell>
+            <TableCell className="order__item">Название</TableCell>
+            <TableCell className="order__item">ИД платежа</TableCell>
+            <TableCell className="order__item">Количество</TableCell>
+            <TableCell className="order__item" align="right">
+              Сумма продажи
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -30,20 +32,31 @@ export default function Orders() {
               <TableCell className="order__item">{item.updatedAt}</TableCell>
               <TableCell className="order__item">{item.name}</TableCell>
               <TableCell className="order__item">{item.paymentID}</TableCell>
-              <TableCell className="order__item">{item.cart.map((cartItem, index) => {
-                return (
-                  <div key={index} className="flexrow">
-                    <img src={cartItem.images.url} alt="" className="order__image"/>
-                    <p>{cartItem.title} - {cartItem.quantity}</p>
-                  </div>
-                )
-              })}</TableCell>
-              <TableCell className="order__item" align="right">${item.cart.reduce((prev, cartItem) => (
-                     prev + (cartItem.quantity * cartItem.price)
-              ), 0)}</TableCell>
+              <TableCell className="order__item">
+                {item.cart.map((cartItem, index) => {
+                  return (
+                    <div key={index} className="flexrow">
+                      <img
+                        src={cartItem.images.url}
+                        alt=""
+                        className="order__image"
+                      />
+                      <p>
+                        {cartItem.title} - {cartItem.quantity}
+                      </p>
+                    </div>
+                  );
+                })}
+              </TableCell>
+              <TableCell className="order__item" align="right">
+                ₸
+                {item.cart.reduce(
+                  (prev, cartItem) => prev + cartItem.quantity * cartItem.price,
+                  0
+                )}
+              </TableCell>
             </TableRow>
           ))}
-          
         </TableBody>
       </Table>
     </React.Fragment>
